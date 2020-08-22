@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- <bean id="studentDAO" class="site.itwill05.di.StudentJdbcDAO"/> -->
+	<bean id="studentJdbcDAO" class="site.itwill05.di.StudentJdbcDAO"/>
+	<bean id="studentMybatisDAO" class="site.itwill05.di.StudentMybatisDAO"/>
+
+	<!-- property 엘리먼트를 이용하여 개발자가 수동으로 Spring Bean를 필드에 전달하여 의존성 주입(Dependency Injection) : Setter Injection -->
+	<!-- 
+	<bean id="studentService" class="site.itwill05.di.StudentServiceImpl">
+		<property name="studentDAO" ref="studentDAO"/>
+	</bean>
+	-->
+	
+	<!-- autowire 속성 : no(기본), byName, byType, constructor 중 하나를 속성값으로 설정 -->
+	<!-- => autowire 속성값에 따라 Spring Container가 자동으로 Spring Bean를 필드에 전달하여 의존성 주입 -->
+	
+	<!-- byName 속성값 : Spring Bean의 필드명과 같은 beanName의 Spring Bean을 전달하여 의존성 주입 - Setter Injection -->
+	<!-- => Spring Bean의 필드명과 같은 beanName이 없는 경우 의존성 주입 미발생 - NullPointerException 발생 -->
+	<!-- <bean id="studentService" class="site.itwill05.di.StudentServiceImpl" autowire="byName"/> -->
+	
+	<!-- byType 속성값 : Spring Bean의 필드와 같은 클래스의 Spring Bean을 전달하여 의존성 주입 - Setter Injection -->
+	<!-- => 필드가 인터페이스인 경우 자식클래스의 Spring Bean으로 의존성 주입 -->
+	<!-- => 필드가 인터페이스인 경우 자식클래스의 Spring Bean이 여러개인 경우 의존성 주입에 따른 예외 발생 -->
+	<!-- <bean id="studentService" class="site.itwill05.di.StudentServiceImpl" autowire="byType"/> -->
+	
+	<!-- constructor 속성값 : Spring Bean의 필드와 같은 클래스의 Spring Bean을 전달하여 의존성 주입(byType 속성값과 유사) - Constructor Injection -->
+	<!-- => 필드가 인터페이스인 경우 자식클래스의 Spring Bean으로 의존성 주입 -->
+	<!-- => 필드가 인터페이스인 경우 자식클래스의 Spring Bean이 여러개인 경우 의존성 주입 미발생 - NullPointerException 발생 -->
+	<bean id="studentService" class="site.itwill05.di.StudentServiceImpl" autowire="constructor"/>
+</beans>

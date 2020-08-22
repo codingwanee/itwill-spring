@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.itwill10.mapper.UserinfoMapper">
+	<insert id="insertUserinfo">
+		insert into userinfo values(#{userid},#{password},#{name},#{email})
+	</insert>
+	
+	<update id="updateUserinfo">
+		update userinfo set 
+		<if test="password!=null and password!=''">
+			password=#{password},
+		</if>
+		name=#{name},email=#{email} where userid=#{userid}
+	</update>
+	
+	<delete id="deleteUserinfo">
+		delete from userinfo where userid=#{userid}
+	</delete>
+	
+	<select id="selectUserinfo" resultType="Userinfo">
+		select * from userinfo where userid=#{userid}
+	</select>
+	
+	<select id="selectAllUserinfo" resultType="Userinfo">
+		select * from userinfo order by userid
+	</select>
+</mapper>
+
+
+

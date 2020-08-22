@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- 핵심관심모듈로 사용하기 위한 메소드가 선언된 클래스를 Spring Bean으로 등록 -->
+	<bean id="studentDAO" class="site.itwill07.aop.StudentDAOImpl"/>
+	<bean id="studentService" class="site.itwill07.aop.StudentServiceImpl">
+		<property name="studentDAO" ref="studentDAO"/>
+	</bean>
+	
+	<!-- 횡단관심모듈이 선언된 클래스(Advice)로 Spring Bean 등록 -->
+	<bean id="loggingBeforeAdvice" class="site.itwill07.aop.LoggingBeforeAdvice"/>
+	<bean id="loggingAfterAdvice" class="site.itwill07.aop.LoggingAfterAdvice"/>
+	<bean id="loggingAroundAdvice" class="site.itwill07.aop.LoggingAroundAdvice"/>
+	
+	<!-- config : Spring AOP(AspectJ) 설정을 위한 상위 엘리먼트 -->
+	<aop:config>
+		<!-- pointcut : Pointcut 설정을 위한 엘리먼트 -->
+		<!-- => Pointcut : 횡단관심코드가 삽입되기 위한 핵심관심모듈을 등록하는 기능 -->
+		<!-- => Spring Bean으로 등록된 클래스의 메소드를 핵심관심모듈로 등록 -->
+		<!-- => aspect 엘리먼트에서 Pointcut 재사용을 위해 설정 - 생략 가능 -->
+		<!-- id 속성 : pointcut 엘리먼트의 고유값을 속성값으로 설정 -->
+		<!-- expression 속성 : execution 또는 within 중 하나를 속성값으로 설정 -->
+		
+		<!-- execution 속성값 : Spring Bean으로 등록된 클래스의 메소드를 Pointcut 표현식을 이용하여 핵심관심모듈로 등록 -->
+		<!-- 형식) execution([접근지정자] 반환형 [패키지명.클래스명.]메소드명(자료형,자료형,...)) -->
+		<!-- Pointcut 표현식에서는 와일드카드와 연산자를 이용하여 설정 가능 -->
+		<!-- => 와일드카드 : ..(0개 이상), *(1개 이상), +(0개 또는 1개) -->
+		<!-- => 연산자 : !(NOT), &&(AND), ||(OR) -->
+		<!-- => 반환형이나 매개변수의 자료형이 클래스인 경우 패키지명을 포함하여 표현 -->
+		<aop:pointcut expression="execution(* *(..))" id="loggingBeforePointcut"/>
+		
+		<!-- within : Spring Bean으로 등록된 클래스에 존재하는 모든 메소드를 핵심관심모듈로 등록 -->
+		<!-- 형식) within([패키지명.]클래스명) -->
+		<!-- => 클래스 대신 인터페이스를 선언하여 자식클래스의 메소드를 핵심관심모듈로 등록 불가능 -->
+		<aop:pointcut expression="within(site.itwill07.aop.StudentServiceImpl)" id="loggingAfterReturningPointcut"/>
+		
+		<!-- aspect : 핵심관심모듈(Pointcut)에 횡단관심모듈(Advice)을 원하는 위치(JoinPoint)에 삽입되도록 설정하는 엘리먼트 -->
+		<!-- => ApsectJ Weaver를 이용하여 Apsect 기능의 모듈을 생성해 실행되도록 지원 -->
+		<!-- ref 속성 : Advice 클래스로 등록된 Spring Bean의 beanName를 속성값으로 설정 -->
+		<aop:aspect ref="loggingBeforeAdvice">
+			<!-- before : 핵심관심모듈 실행 전에 횡단관심모듈이 삽입되어 실행되도록 설정하는 엘리먼트 - JoinPoint -->
+			<!-- method 속성 : 횡단관심모듈의 메소드명을 속성값으로 설정 -->
+			<!-- pointcut-ref 속성 : pointcut 엘리먼트의 고유값을 속성값으로 설정 -->
+			<!-- => 핵심관심모듈의 메소드가 호출될 경우 횡단관심모듈이 삽입된 메소드 실행 -->
+			<aop:before method="beforeLog" pointcut-ref="loggingBeforePointcut"/>
+		</aop:aspect>
+		
+		<aop:aspect ref="loggingAfterAdvice">
+			<!-- after-returning : 핵심관심모듈이 정상적으로 실행된 후에 횡단관심모듈이 실행되도록 설정하는 엘리먼트 - JoinPoint -->
+			<aop:after-returning method="afterReturningLog" pointcut-ref="loggingAfterReturningPointcut"/>
+			<!-- after-throwing : 핵심관심모듈 실행시 예외가 발생된 후에 횡단관심모듈이 실행되도록 설정하는 엘리먼트 - JoinPoint -->
+			<aop:after-throwing method="afterThrowingLog" pointcut="execution(site.itwill07.aop.Student site.itwill07.aop.StudentServiceImpl.getStudent(int))"/>
+			<!-- after : 핵심관심모듈 실행후 무조건 횡단관심모듈이 실행되도록 설정하는 엘리먼트 - JoinPoint -->
+			<aop:after method="afterLog" pointcut="execution(* getStudent*(..))"/>
+		</aop:aspect>
+		
+		<aop:aspect ref="loggingAroundAdvice">
+			<!-- around : 핵심관심모듈이 실행 전후에 횡단관심모듈이 실행되도록 설정하는 엘리먼트 - JoinPoint -->
+			<aop:around method="aroundLog" pointcut="execution(* getStudentList())"/>
+		</aop:aspect>
+	</aop:config>
+</beans>

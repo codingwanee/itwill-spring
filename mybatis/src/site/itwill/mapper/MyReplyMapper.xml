@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.itwill.mapper.MyReplyMapper">
+	<insert id="insertReply" parameterType="MyReply">
+		<selectKey resultType="int" keyProperty="replyNo" order="BEFORE">
+			select myreply_seq.nextval from dual
+		</selectKey>
+		insert into myreply values(#{replyNo},#{replyId},#{replyContent},sysdate,#{replyCommentNo})
+	</insert>
+	
+	<select id="selectReplyList" resultType="MyReply">
+		select * from myreply order by reply_no desc 
+	</select>
+	
+	<resultMap type="MyReplyUser" id="myUserReplyResultMap">
+		<association property="reply" javaType="MyReply">
+			<id column="reply_no" property="replyNo"/>
+			<result column="reply_id" property="replyId"/>
+			<result column="reply_content" property="replyContent"/>
+			<result column="reply_date" property="replyDate"/>
+			<result column="reply_comment_no" property="replyCommentNo"/>
+		</association>
+		<association property="user" javaType="MyUser">
+			<id column="user_id" property="userId"/>
+			<result column="user_name" property="userName"/>
+		</association>
+	</resultMap>
+	
+	<select id="selectReplyUserList" resultMap="myUserReplyResultMap">
+		select * from myreply join myuser on reply_id=user_id order by reply_no desc 
+	</select>
+	
+	<select id="selectCommentNoReplyList" parameterType="int" resultType="MyReply">
+		select * from myreply where reply_comment_no=#{replyCommentNo}
+	</select>
+</mapper>
+
+
+
+

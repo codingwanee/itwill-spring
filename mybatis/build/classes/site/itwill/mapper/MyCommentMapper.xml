@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.itwill.mapper.MyCommentMapper">
+	<!-- 글번호(자동증가값), 작성자 아이디(로그인 아이디), 글내용(입력값), 작성날짜(시스템날짜)를 MYCOMMENT 테이블에 저장 -->
+	<!-- 
+	<insert id="insertComment" parameterType="MyComment1">
+		insert into mycomment values(mycomment_seq.nextval,#{commentId},#{commentContent},sysdate)
+	</insert>
+	-->
+			
+	<insert id="insertComment" parameterType="MyComment1">
+		<!-- selectKey : JavaBean 클래스 필드에 SELECT 명령의 검색 결과값을 저장하기 위한 엘리먼트 -->
+		<!-- => insert 엘리먼트에서만 사용 가능 -->
+		<!-- => 자동 증가값을 SQL 명령에서 다수 사용할 경우 또는 자동 증가값을 로그에서 확인하고자 할 경우 사용 -->
+		<!-- resultType 속성 : 검색 결과 매핑하기 위한 JavaType(TypeAlias)를 속성값으로 설정 -->
+		<!-- keyProperty 속성 : 자바빈의 필드명을 속성값으로 설정 -->
+		<!-- order 속성 : BEFORE(기본) 또는 AFTER 둘 중 하나를 속성값으로 설정 - SELECT 명령의 실행 순서 지정 -->
+		<selectKey resultType="int" keyProperty="commentNo" order="BEFORE">
+			select mycomment_seq.nextval from dual
+		</selectKey>
+		insert into mycomment values(#{commentNo},#{commentId},#{commentContent},sysdate)
+	</insert>
+	
+	<!-- 검색행의 컬럼명과 자바빈의 필드명이 동일하지 않아도 Mybatis 실행옵션에 
+	의해 컬럼명과 필드명이 같아져 자동 매핑되어 결과 반환 -->
+	<select id="selectCommentList1" resultType="MyComment1">
+		select * from mycomment order by comment_no desc
+	</select>
+	
+	<!-- 검색행의 컬럼명과 자바빈의 필드명이 다른 경우 검색행의 컬럼값이 자바빈의 
+	필드값으로 모두 매핑되지 않아 자바빈 대신 NULL 반환 -->
+	<!-- 
+	<select id="selectCommentList2" resultType="MyComment2">
+		select * from mycomment order by comment_no desc
+	</select>
+	-->
+	
+	<!-- 검색행의 컬럼명 대신 필드명과 동일한 이름의 별명을 부여하여 검색 -->
+	<!-- 
+	<select id="selectCommentList2" resultType="MyComment2">
+		select comment_no "no", comment_id "id",comment_content "content"
+			,comment_date "date" from mycomment order by comment_no desc
+	</select>
+	-->
+	 
+	<!-- resultMap 엘리먼트를 이용하여 검색행의 컬럼값을 자바빈의 필드값으로 매핑되도록 설정 -->
+	<!-- => 기본생성자로 자바빈 인스턴스를 생성하고 컬럼값을 전달받아 Setter 메소드로 필드값 변경 -->
+	<!-- => id 엘리먼트 또는 result 엘리먼트를 이용하여 컬럼값을 필드값으로 매핑 --> 
+	<resultMap type="MyComment2" id="myComment2ResultMap">
+		<id column="comment_no" property="no"/>
+		<result column="comment_id" property="id"/>
+		<result column="comment_content" property="content"/>
+		<result column="comment_date" property="date"/>
+	</resultMap>
+	
+	<!-- resultMap 속성에 resultMap 엘리먼트를 불러와 검색행의 컬럼값을 
+	자바빈의 필드값으로 매핑하여 검색 결과 제공 -->
+	<!-- 
+	<select id="selectCommentList2" resultMap="myComment2ResultMap">
+		select * from mycomment order by comment_no desc
+	</select>
+	-->
+	
+	<!-- 자바빈 생성자의 매개변수로 검색행의 컬럼값을 전달받아 매핑 설정  -->
+	<!-- => 자바빈 인스턴스를 생성할 때 컬럼값으로 필드의 초기값 부여  -->
+	<resultMap type="MyComment2" id="myComment2ConstructorResultMap">
+		<!-- constructor : 자바빈 클래스의 생성자를 이용하여 매핑 설정하는 엘리먼트 -->
+		<!-- => idArg 엘리먼트와 arg 엘리먼트를 이용하여 차례대로 생성자의 매개변수에 전달하여 매핑 -->
+		<constructor>
+			<!-- idArg : PK 제약조건이 부여된 컬럼값을 생성자의 매개변수로 전달하기 위한 엘리먼트 -->
+			<!-- column 속성 : 생성자의 매개변수에 전달하기 위한 컬럼명을 속성값으로 설정 -->
+			<!-- javaType 속성 : 매개변수의 JavaType(TypeAlias)를 속성값으로 설정 -->
+			<idArg column="comment_no" javaType="_int"/>
+			<!-- arg : P컬럼값을  생성자의 매개변수로 전달하기 위한 엘리먼트 -->
+			<arg column="comment_id" javaType="string"/>
+			<arg column="comment_content" javaType="string"/>
+			<arg column="comment_date" javaType="string"/>
+		</constructor>
+	</resultMap>
+	
+	<select id="selectCommentList2" resultMap="myComment2ConstructorResultMap">
+		select * from mycomment order by comment_no desc
+	</select>
+	
+	<!-- 
+	<select id="selectCommentList3" resultType="MyComment3">
+		select comment_no "no", comment_id "id", user_name "name",comment_content "content"
+			, comment_date "date" from mycomment join myuser on comment_id=user_id order by comment_no desc
+	</select>
+	-->
+	
+	<resultMap type="MyComment3" id="myComment3ResultMap">
+		<id column="comment_no" property="no"/>
+		<result column="comment_id" property="id"/>
+		<result column="user_name" property="name"/>
+		<result column="comment_content" property="content"/>
+		<result column="comment_date" property="date"/>
+	</resultMap>
+	
+	<select id="selectCommentList3" resultMap="myComment3ResultMap">
+		select * from mycomment join myuser on comment_id=user_id order by comment_no desc
+	</select>
+	
+	<select id="selectCommentUserList1" resultType="MyCommentUser1">
+		select * from mycomment join myuser on comment_id=user_id order by comment_no desc
+	</select>
+	
+	<resultMap type="MyCommentUser2" id="myCommentUserResultMap">
+		<!-- association : 1:1 관계의 테이블 조인 검색행의 컬럼값을 자바빈 
+		클래스의 포함 인스턴스 필드값으로 매핑 설정하기 위한 엘리먼트 -->
+		<!-- property 속성 : 포함 인스턴스의 필드명을 속성값으로 설정 -->
+		<!-- javaType 속성 : 포함 인스턴스의 클래스명을 속성값으로 설정 -->
+		<association property="comment" javaType="MyComment1">
+			<id column="comment_no" property="commentNo"/>
+			<result column="comment_id" property="commentId"/>
+			<result column="comment_content" property="commentContent"/>
+			<result column="comment_date" property="commentDate"/>
+		</association>
+		<association property="user" javaType="MyUser">
+			<id column="user_id" property="userId"/>
+			<result column="user_name" property="userName"/>
+		</association>
+	</resultMap>
+	
+	<select id="selectCommentUserList2" resultMap="myCommentUserResultMap">
+		select * from mycomment join myuser on comment_id=user_id order by comment_no desc
+	</select>
+	
+	<select id="selectComment" parameterType="int" resultType="MyComment1">
+		select * from mycomment where comment_no=#{commentNo}
+	</select>
+	
+	<resultMap type="MyCommentReply" id="MyCommentReplyResultMap">
+		<id column="comment_no" property="commentNo"/>
+		<result column="comment_id" property="commentId"/>
+		<result column="comment_content" property="commentContent"/>
+		<result column="comment_date" property="commentDate"/>
+		<!-- collection : 1:N 관계의 테이블 조인 검색행의 컬럼값을 자바빈 
+		클래스의 List 인스턴스 필드값으로 매핑 설정하기 위한 엘리먼트 - 반복처리 -->
+		<!-- property 속성 : List 인스턴스 필드명을 속성값으로 설정 -->
+		<!-- ofType 속성 : List 인스턴스의 요소에 대한 자바빈 클래스명을 속성값으로 설정 -->
+		<collection property="replies" ofType="MyReply">
+			<id column="reply_no" property="replyNo"/>
+			<result column="reply_id" property="replyId"/>
+			<result column="reply_content" property="replyContent"/>
+			<result column="reply_date" property="replyDate"/>
+			<result column="reply_comment_no" property="replyCommentNo"/>
+		</collection>
+	</resultMap>
+	
+	<!-- 댓글이 존재하지 않는 게시글도 검색되도록 LEFT OUTER JOIN 사용 -->
+	<select id="selectCommentReply" parameterType="int" resultMap="MyCommentReplyResultMap">
+		select * from mycomment left join myreply on comment_no=reply_comment_no where comment_no=${commentNo}	
+	</select>
+	
+	<resultMap type="MyComment1" id="myComment1ResultMap">
+		<id column="comment_no" property="commentNo"/>
+		<result column="comment_id" property="commentId"/>
+		<result column="comment_content" property="commentContent"/>
+		<result column="comment_date" property="commentDate"/>
+	</resultMap>
+	
+	<!-- resultMap 엘리먼트의 하위 엘리먼트 선언 순서 -->
+	<!-- => constructor > id > result > association > collection -->
+	<!-- association 엘리먼트는 내부적으로 selectOne() 메소드를 호출하여 단일행 검색결과 매핑 -->
+	<!-- 문제점) association 엘리먼트 뒤에 collection 엘리먼트를 선언할 경우 다수행 검색 -->
+	<!-- => selectOne() 메소드 호출로 다수행의 검색결과를 매핑하지 못하므로 에러 발생 -->
+	<!-- 해결법) association 엘리먼트 선언 전에 다른 엘리먼트를 사용하여 selectList() 메소드가 호출되도록 설정 -->
+	<resultMap type="MyCommentUserReplyUser" id="myCommentUserReplyUserResultMap">
+		<id column="comment_no" property="commentNo"/>
+		<!-- 
+		<association property="comment" javaType="MyComment1">
+			<id column="comment_no" property="commentNo"/>
+			<result column="comment_id" property="commentId"/>
+			<result column="comment_content" property="commentContent"/>
+			<result column="comment_date" property="commentDate"/>
+		</association>
+		-->
+		<!-- 동일한 매핑정보가 선언된 ResultMap 엘리먼트가 존재할 경우 
+		resultMap 속성값으로 ResultMap 엘리먼트 고유값을 설정하여 매핑 -->
+		<association property="comment" javaType="MyComment1" resultMap="myComment1ResultMap"/>
+		 
+		<association property="user" javaType="MyUser">
+			<id column="user_id" property="userId"/>
+			<result column="user_name" property="userName"/>
+		</association>
+		<collection property="replies" ofType="MyReplyUser">
+			<association property="reply" javaType="MyReply">
+				<id column="reply_no" property="replyNo"/>
+				<result column="reply_id" property="replyId"/>
+				<result column="reply_content" property="replyContent"/>
+				<result column="reply_date" property="replyDate"/>
+				<result column="reply_comment_no" property="replyCommentNo"/>
+			</association>
+			<association property="user" javaType="MyUser">
+				<id column="reply_user_id" property="userId"/>
+				<result column="reply_user_name" property="userName"/>
+			</association>
+		</collection>
+	</resultMap>
+	
+	<!-- 다수의 테이블을 조인할 경우 중복된 컬럼이 발생되지 않도록 SQL 명령을 작성하는 것을 권장 -->
+	<select id="selectCommentUserReplyUser" parameterType="int" resultMap="myCommentUserReplyUserResultMap">
+		select * from (mycomment join myuser on comment_id=user_id) left join 
+			(select	myreply.*,user_id reply_user_id,user_name reply_user_name from myreply join myuser on reply_id=user_id)
+			on comment_no=reply_comment_no where comment_no=#{commentNo}
+	</select>
+</mapper>

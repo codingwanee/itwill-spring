@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<!-- PropertyPlaceholderConfigurer 클래스 : Properties 파일을 읽어 XML 파일에서 사용할 수 있는 기능 제공 -->
+	<!-- => locations 필드에 Properties 파일의 경로를 전달하여 저장 -->
+	<!-- => XML 파일에서 ${Key} 형식으로 표현하여 값을 사용 -->
+	<!-- <context:property-placeholder location="파일경로"/> 엘리먼트와 동일 - context Namespace(XSD) 필드 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="site/itwill04/bean/user.properties"/>
+	</bean>
+
+	<bean id="propertiesBean" class="site.itwill04.bean.PropertiesBean">
+		<!-- 
+		<property name="name" value="홍길동"/>
+		<property name="phone" value="010-1234-5678"/>
+		<property name="email" value="abc@itwill.site"/>
+		-->
+		<property name="name" value="${name}"/>
+		<property name="phone" value="${phone}"/>
+		<property name="email" value="${email}"/>
+	</bean>
+</beans>

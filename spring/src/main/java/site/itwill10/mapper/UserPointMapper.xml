@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.itwill10.mapper.UserPointMapper">
+	<insert id="insertUserPoint">
+		insert into userpoint values(#{id},#{name},0)
+	</insert>
+	
+	<update id="plusUserPoint">
+		update userpoint set point=point+100 where id=#{id} 
+	</update>
+	
+	<update id="minusUserPoint">
+		update userpoint set point=point-100 where id=#{id} 
+	</update>
+	
+	<select id="selectUserPoint" resultType="UserPoint">
+		select * from userpoint where id=#{id}
+	</select>
+</mapper>

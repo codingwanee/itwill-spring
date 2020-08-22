@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<!-- Front Controller(DispatcherServlet)에서 사용하기 위한 Spring Bean를 등록하기 위한 Bean Configuration File -->
+	
+	<!-- Command Controller 클래스를  Spring Bean으로 등록 -->
+	<bean id="listController" class="site.itwill09.springMvc.ListController"/>
+	<bean id="viewController" class="site.itwill09.springMvc.ViewController"/>
+
+	<!-- Spring Framework에서 제공하는 HandlerMapping 관련 클래스를 Spring Bean으로 등록 -->
+	<!-- => Front Controller에게 클라이언트 요청을 처리할 수 있는 Command Controller 제공 -->
+	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<!-- mappings 필드(Map)에 클라이언트 요청정보(Key)와 요청처리을 위한 Command 
+		Controller 클래스의 Spring Bean(Value)을 인젝션(Injection) 처리 -->
+		<property name="mappings">
+			<props>
+				<prop key="/list.do">listController</prop>
+				<prop key="/view.do">viewController</prop>
+			</props>
+		</property>
+	</bean>
+</beans>

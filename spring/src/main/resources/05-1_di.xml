@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<!-- 기본 생성자를 이용하여 Spring Bean 생성 - 필드 기본값 저장 -->
+	<bean id="student1" class="site.itwill05.di.Student"/>
+
+	<!-- 매개변수가 선언된 생성자를 이용하여 Spring Bean 생성 -->
+	<!-- => 매개변수에 값을 전달하여 필드값 변경 : Constructor Injection -->	
+	<bean id="student2" class="site.itwill05.di.Student">
+		<!-- constructor-arg : 생성자의 매개변수에 값을 전달하기 위한 엘리먼트 -->
+		<!-- value 속성 : 전달값을 속성값으로 설정 -->
+		<!-- => 전달값은 기본적으로 String 인스턴스로 전달 - 매개변수에 저장될 경우 자동 형변환 -->
+		<constructor-arg value="1000"/>
+	</bean>
+	
+	<bean id="student3" class="site.itwill05.di.Student">
+		<!-- index 속성 : 매개변수에 전달될 값의 순서를 속성값으로 설정 -->
+		<!-- => 0부터 1씩 증가되는 값을 속성값으로 사용 -->
+		<!-- => index 속성이 생략된 경우 선언 순서대로 index 속성값이 자동 부여 -->
+		<constructor-arg value="홍길동" index="1"/>
+		<constructor-arg value="2000" index="0"/>
+		<constructor-arg value="abc@itwill.site" index="2"/>
+	</bean>
+	
+	<!-- 기본 생성자를 이용하여 Spring Bean 생성 - 필드 기본값 저장 -->
+	<!-- => Setter 메소드를 호출하여 필드갑 변경 : Setter Injection -->
+	<bean id="student4" class="site.itwill05.di.Student">
+		<!-- property : Setter 메소드를 호출하여 필드값을 변경하기 위한 엘리먼트 -->
+		<!-- name 속성 : 변경하고자 하는 필드이름을 속성값으로 설정 - 필드의 Setter 메소드 호출 -->
+		<property name="num" value="3000"/>
+		<property name="name" value="임꺽정"/>
+		<property name="email" value="xyz@google.com"/>
+	</bean>
+
+	<!-- 매개변수가 선언된 생성자를 이용하여 Spring Bean 생성 -->
+	<!-- 생성자(Constructor Injection)와 Setter 메소드(Setter Injection)를 이용하여 필드값 변경 -->
+	<bean id="student5" class="site.itwill05.di.Student">
+		<constructor-arg value="4000"/>
+		<constructor-arg value="전우치"/>
+		<property name="email" value="asd@daum.net"/>
+	</bean>
+	
+	<bean id="studentJdbcDAO" class="site.itwill05.di.StudentJdbcDAO"/>
+	<bean id="studentMybatisDAO" class="site.itwill05.di.StudentMybatisDAO"/>
+
+	<!-- 기본 생성자를 이용하여 Spring Bean 생성 - Spring Bean 필드에 기본값 저장 -->
+	<!-- <bean id="studentServiceImpl" class="site.itwill05.di.StudentServiceImpl"/> -->
+	
+	<!-- 매개변수가 선언된 생성자를 이용하여 Spring Bean 생성 -->
+	<!-- => 생성자의 매개변수에 인스턴스을 전달하여 필드값 변경 - Constructor Injection -->
+	<!-- ref 속성 : 전달하고자 하는 인스턴스(Spring Bean)의 beanName를 속성값으로 설정  -->
+	<!-- => ref 속성값으로 설정된 Spring Bean를 자동으로 먼저 생성 -->
+	<!-- 
+	<bean id="studentServiceImpl" class="site.itwill05.di.StudentServiceImpl">
+		<constructor-arg ref="studentJdbcDAO"/>
+	</bean>
+ 	-->
+
+	<!-- 기본 생성자를 이용하여 Spring Bean 생성 - Spring Bean 필드에 기본값 저장 -->
+	<!-- => Setter 메소드의 매개변수에 인스턴스를 전달하여 필드값 변경 - Setter Injection -->
+ 	<bean id="studentServiceImpl" class="site.itwill05.di.StudentServiceImpl">
+ 		<!-- <property name="studentJdbcDAO" ref="studentJdbcDAO"/> -->
+ 		<!-- ref 속성값만 변경하면 필드에 다른 Spring Bean이 결합되어 동작 -->
+ 		<property name="studentDAO" ref="studentMybatisDAO"/>
+ 	</bean>
+</beans>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- <bean id="annotationBean" class="site.itwill04.bean.AnnotationBean"/> -->
+	<!-- <bean id="componentAnnotationBean" class="site.itwill04.bean.ComponentAnnotationBean"/> -->
+
+	<!-- component-scan : Spring Annotation를 인식하도록 설정하는 엘리먼트 -->
+	<!-- => Bean Configuration File에서 spring-context 스키마 파일(XSD)를 제공해야만 엘리먼트 사용 가능 -->
+	<!-- => Namespaces 탭메뉴에서 필요한 스키마 파일에 대한 추가 및 제거 가능 -->
+	<!-- base-package 속성 : Spring Annotation을 사용한 클래스가 선언된 패키지이름을 속성값으로 설정 -->
+	<context:component-scan base-package="site.itwill04.bean"/>
+</beans>
